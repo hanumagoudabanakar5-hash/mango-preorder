@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fresh Mangoes Pre-Order</title>
+
+<style>
+
+body{
+font-family: 'Segoe UI', sans-serif;
+background: linear-gradient(135deg,#ffd36b,#ff9f43);
+margin:0;
+padding:20px;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:15px;
+width:90%;
+max-width:520px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+animation:fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+h1{
+text-align:center;
+color:#e67e22;
+margin-bottom:10px;
+}
+
+p{
+text-align:center;
+font-size:14px;
+color:#555;
+margin-bottom:20px;
+}
+
+.section-title{
+margin-top:20px;
+font-weight:bold;
+color:#e67e22;
+font-size:15px;
+}
+
+label{
+font-weight:600;
+display:block;
+margin-top:10px;
+font-size:14px;
+}
+
+input, select, textarea{
+width:100%;
+padding:11px;
+margin-top:5px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:14px;
+transition:0.2s;
+box-sizing:border-box;
+}
+
+input:focus, select:focus, textarea:focus{
+border-color:#f39c12;
+outline:none;
+box-shadow:0 0 5px rgba(243,156,18,0.4);
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:25px;
+background:linear-gradient(90deg,#f39c12,#e67e22);
+border:none;
+color:white;
+font-size:16px;
+font-weight:bold;
+border-radius:10px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.03);
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:disabled{
+opacity:0.6;
+cursor:not-allowed;
+transform:none;
+}
+
+.note{
+font-size:12px;
+color:#777;
+margin-top:3px;
+}
+
+.success{
+display:none;
+text-align:center;
+color:green;
+margin-top:15px;
+font-weight:bold;
+}
+
+.error{
+display:none;
+text-align:center;
+color:red;
+margin-top:15px;
+font-weight:bold;
+}
+
+.loading{
+display:none;
+text-align:center;
+color:#e67e22;
+margin-top:15px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🥭 Fresh Mango Pre-Order</h1>
+
+<p>Pre-book fresh farm mangoes directly from our farms. Limited seasonal harvest. Our team will contact you on WhatsApp to confirm your order.</p>
+
+<form id="orderForm">
+
+  <div class="section-title">👤 Customer Details</div>
+
+  <label>Full Name *</label>
+  <input type="text" id="fullName" required>
+
+  <label>Mobile / WhatsApp Number *</label>
+  <input type="tel" id="mobile" required>
+
+  <div class="section-title">📍 Delivery Address</div>
+
+  <label>Full Address</label>
+  <textarea rows="2" id="address"></textarea>
+
+  <label>Area / City</label>
+  <input type="text" id="city">
+
+  <label>Pin Code</label>
+  <input type="number" id="pinCode">
+
+  <label>Landmark (Optional)</label>
+  <input type="text" id="landmark">
+
+  <div class="section-title">🥭 Mango Selection</div>
+
+  <label>Select Mango Variety</label>
+  <select id="mangoVariety">
+    <option>Badami (Karnataka Alphonso)</option>
+    <option>Banganapalli (Benishan)</option>
+    <option>Totapuri</option>
+  </select>
+
+  <label>Quantity (Boxes)</label>
+  <select id="quantity">
+    <option>1 Box</option>
+    <option>2 Boxes</option>
+    <option>3 Boxes</option>
+    <option>5 Boxes</option>
+    <option>10 Boxes</option>
+  </select>
+
+  <div class="note">1 Box ≈ 4–5 Kg</div>
+
+  <div class="section-title">🚚 Delivery Details</div>
+
+  <label>Delivery Method</label>
+  <select id="deliveryMethod">
+    <option>Home Delivery</option>
+    <option>Self Pickup</option>
+  </select>
+
+  <label>Preferred Delivery Date</label>
+  <input type="date" id="deliveryDate">
+
+  <div class="section-title">💳 Payment</div>
+
+  <label>Payment Method</label>
+  <select id="paymentMethod">
+    <option>UPI</option>
+    <option>Cash on Delivery</option>
+  </select>
+
+  <label>Additional Instructions</label>
+  <textarea rows="3" id="instructions"></textarea>
+
+  <button type="button" id="submitBtn" onclick="submitForm()">🥭 Submit Pre-Order</button>
+
+</form>
+
+<div class="loading" id="loading">⏳ Submitting your order please wait...</div>
+<div class="success" id="success">✅ Thank you! Your mango pre-order has been received. We will contact you on WhatsApp shortly.</div>
+<div class="error" id="error">❌ Something went wrong. Please try again.</div>
+
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaOZaKSAI2_L9kq8CRzpp4NU5E4tJ0cp1fvcvDyu7ADGcDNxxaR4MA9ApzuWdoIT0nWg/exec";
+
+function submitForm() {
+  // Get values
+  var fullName = document.getElementById("fullName").value.trim();
+  var mobile = document.getElementById("mobile").value.trim();
+
+  // Validate required fields
+  if (!fullName || !mobile) {
+    alert("Please fill Full Name and Mobile Number!");
+    return;
+  }
+
+  // Collect all data
+  var data = {
+    fullName:       fullName,
+    mobile:         mobile,
+    address:        document.getElementById("address").value.trim(),
+    city:           document.getElementById("city").value.trim(),
+    pinCode:        document.getElementById("pinCode").value.trim(),
+    landmark:       document.getElementById("landmark").value.trim(),
+    mangoVariety:   document.getElementById("mangoVariety").value,
+    quantity:       document.getElementById("quantity").value,
+    deliveryMethod: document.getElementById("deliveryMethod").value,
+    deliveryDate:   document.getElementById("deliveryDate").value,
+    paymentMethod:  document.getElementById("paymentMethod").value,
+    instructions:   document.getElementById("instructions").value.trim()
+  };
+
+  // Show loading
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("success").style.display = "none";
+  document.getElementById("error").style.display = "none";
+
+  // Send to Google Sheets
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(function() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("success").style.display = "block";
+    document.getElementById("orderForm").reset();
+    document.getElementById("submitBtn").disabled = false;
+  })
+  .catch(function() {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("error").style.display = "block";
+    document.getElementById("submitBtn").disabled = false;
+  });
+}
+</script>
+
+</body>
+</html>
